@@ -104,9 +104,6 @@ for /d %%d in ("C:\scratchdir\Windows\SystemApps\Microsoft.OneDrive*") do rd /s 
 
 del /f /q /s "C:\scratchdir\Windows\System32\OneDrive*" >nul 2>&1
 
-echo Removing WebExperience (Widgets):
-call :RemoveApp "WebExperience"
-
 echo Components removal complete!
 timeout /t 2 /nobreak > nul
 cls
