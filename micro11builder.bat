@@ -104,10 +104,7 @@ echo Removing of system apps complete! Now proceeding to removal of system packa
 timeout /t 1 /nobreak > nul
 cls
 echo Removing Media Player Legacy:
-dism /image:c:\scratchdir /Remove-Package /PackageName:Microsoft-Windows-MediaPlayer-Package~31bf3856ad364e35~amd64~~10.0.22621.1265 > nul
-dism /image:c:\scratchdir /Remove-Package /PackageName:Microsoft-Windows-MediaPlayer-Package~31bf3856ad364e35~wow64~en-US~10.0.22621.1 > nul
-dism /image:c:\scratchdir /Remove-Package /PackageName:Microsoft-Windows-MediaPlayer-Package~31bf3856ad364e35~amd64~~10.0.22621.1265 > nul
-dism /image:c:\scratchdir /Remove-Package /PackageName:Microsoft-Windows-MediaPlayer-Package~31bf3856ad364e35~wow64~~10.0.22621.1 > nul
+dism /image:c:\scratchdir /Disable-Feature /FeatureName:WindowsMediaPlayer /Remove >nul 2>&1
 
 echo Removing OneDrive:
 takeown /f C:\scratchdir\Windows\System32\OneDriveSetup.exe
