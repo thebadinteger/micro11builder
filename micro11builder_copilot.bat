@@ -29,7 +29,7 @@ md C:\micro11
 echo Copying Windows image...
 xcopy.exe /E /I /H /R /Y /J %DriveLetter% C:\micro11 >nul
 echo Copy complete!
-sleep 2
+timeout /t 2 /nobreak > nul
 cls
 echo Getting image information:
 dism /Get-WimInfo /wimfile:c:\micro11\sources\install.wim
@@ -141,7 +141,7 @@ Reg add "HKLM\zNTUSER\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryM
 			Reg add "HKLM\zSOFTWARE\Microsoft\PolicyManager\current\device\Start" /v "ConfigureStartPins" /t REG_SZ /d "{\"pinnedList\": [{}]}" /f >nul 2>&1
 echo Enabling Local Accounts on OOBE:
 Reg add "HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\OOBE" /v "BypassNRO" /t REG_DWORD /d "1" /f >nul 2>&1
-reg add HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\OOBE /v HideOnlineAccountScreen /t REG_DWORD /d 1 /f /t REG_DWORD /d "1" /f >nul 2>&1
+Reg add "HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\OOBE" /v "HideOnlineAccountScreen" /t REG_DWORD /d "1" /f >nul 2>&1
 echo Disabling Reserved Storage:
 Reg add "HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\ReserveManager" /v "ShippedWithReserves" /t REG_DWORD /d "0" /f >nul 2>&1
 echo Disabling Chat icon:
