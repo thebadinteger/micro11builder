@@ -1,8 +1,8 @@
 @echo off
 setlocal EnableExtensions EnableDelayedExpansion
 
-title Nano11 Builder
-echo Welcome to the Nano11 Copilot Edition image creator!
+title Micro11 Builder
+echo Welcome to the Micro11 Copilot Edition image creator!
 timeout /t 3 /nobreak > nul
 cls
 
@@ -25,21 +25,21 @@ if not exist "%DriveLetter%\sources\install.wim" (
 	echo.Please enter the correct DVD Drive Letter..
 	goto :Stop
 )
-md C:\nano11
+md C:\micro11
 echo Copying Windows image...
-xcopy.exe /E /I /H /R /Y /J %DriveLetter% C:\nano11 >nul
+xcopy.exe /E /I /H /R /Y /J %DriveLetter% C:\micro11 >nul
 echo Copy complete!
 sleep 2
 cls
 echo Getting image information:
-dism /Get-WimInfo /wimfile:c:\nano11\sources\install.wim
+dism /Get-WimInfo /wimfile:c:\micro11\sources\install.wim
 set index=
 set /p index=Please enter the image index:
 set "index=%index%"
 echo Mounting Windows image. This may take a while.
 echo.
 md c:\scratchdir
-dism /mount-image /imagefile:C:\nano11\sources\install.wim /index:%index% /mountdir:c:\scratchdir
+dism /mount-image /imagefile:C:\micro11\sources\install.wim /index:%index% /mountdir:c:\scratchdir
 echo Mounting complete! Performing removal of applications...
 echo Removing Clipchamp...
 dism /image:c:\scratchdir /Remove-ProvisionedAppxPackage /PackageName:Clipchamp.Clipchamp*
@@ -99,14 +99,6 @@ dism /image:c:\scratchdir /Remove-ProvisionedAppxPackage /PackageName:Microsoft.
 echo Removing of system apps complete! Now proceeding to removal of system packages...
 timeout /t 1 /nobreak > nul
 cls
-echo Removing Handwriting:
-dism /image:c:\scratchdir /Remove-Package /PackageName:Microsoft-Windows-LanguageFeatures-Handwriting-en-us-Package~31bf3856ad364e35~amd64~~10.0.22621.1265 > nul
-echo Removing OCR:
-dism /image:c:\scratchdir /Remove-Package /PackageName:Microsoft-Windows-LanguageFeatures-OCR-en-us-Package~31bf3856ad364e35~amd64~~10.0.22621.1265 > nul
-echo Removing Speech:
-dism /image:c:\scratchdir /Remove-Package /PackageName:Microsoft-Windows-LanguageFeatures-Speech-en-us-Package~31bf3856ad364e35~amd64~~10.0.22621.1265 > nul
-echo Removing TTS:
-dism /image:c:\scratchdir /Remove-Package /PackageName:Microsoft-Windows-LanguageFeatures-TextToSpeech-en-us-Package~31bf3856ad364e35~amd64~~10.0.22621.1265 > nul
 echo Removing Media Player Legacy:
 dism /image:c:\scratchdir /Remove-Package /PackageName:Microsoft-Windows-MediaPlayer-Package~31bf3856ad364e35~amd64~~10.0.22621.1265 > nul
 dism /image:c:\scratchdir /Remove-Package /PackageName:Microsoft-Windows-MediaPlayer-Package~31bf3856ad364e35~wow64~en-US~10.0.22621.1 > nul
@@ -177,14 +169,14 @@ echo Unmounting image...
 dism /unmount-image /mountdir:c:\scratchdir /commit
 
 echo Exporting image...
-Dism /Export-Image /SourceImageFile:c:\nano11\sources\install.wim /SourceIndex:%index% /DestinationImageFile:c:\nano11\sources\install2.wim /compress:max
-del c:\nano11\sources\install.wim
-ren c:\nano11\sources\install2.wim install.wim
+Dism /Export-Image /SourceImageFile:c:\micro11\sources\install.wim /SourceIndex:%index% /DestinationImageFile:c:\micro11\sources\install2.wim /compress:max
+del c:\micro11\sources\install.wim
+ren c:\micro11\sources\install2.wim install.wim
 echo Windows image completed. Continuing with boot.wim.
 timeout /t 2 /nobreak > nul
 cls
 echo Mounting boot image:
-dism /mount-image /imagefile:c:\nano11\sources\boot.wim /index:2 /mountdir:c:\scratchdir
+dism /mount-image /imagefile:c:\micro11\sources\boot.wim /index:2 /mountdir:c:\scratchdir
 echo Loading registry...
 reg load HKLM\zCOMPONENTS "c:\scratchdir\Windows\System32\config\COMPONENTS" >nul
 reg load HKLM\zDEFAULT "c:\scratchdir\Windows\System32\config\default" >nul
@@ -214,16 +206,16 @@ reg unload HKLM\zSYSTEM >nul 2>&1
 echo Unmounting image...
 dism /unmount-image /mountdir:c:\scratchdir /commit 
 cls
-echo the Nano11 Copilot Edition image is now completed. Proceeding with the making of the ISO...
+echo the Micro11 Copilot Edition image is now completed. Proceeding with the making of the ISO...
 echo Copying unattended file for bypassing MS account on OOBE...
-copy /y %~dp0autounattend.xml c:\nano11\autounattend.xml
+copy /y %~dp0autounattend.xml c:\micro11\autounattend.xml
 echo.
 echo Creating ISO image...
-%~dp0oscdimg.exe -m -o -u2 -udfver102 -bootdata:2#p0,e,bc:\nano11\boot\etfsboot.com#pEF,e,bc:\nano11\efi\microsoft\boot\efisys.bin c:\nano11 %~dp0nano11.iso
+%~dp0oscdimg.exe -m -o -u2 -udfver102 -bootdata:2#p0,e,bc:\micro11\boot\etfsboot.com#pEF,e,bc:\micro11\efi\microsoft\boot\efisys.bin c:\micro11 %~dp0micro11.iso
 echo Creation completed! Press any key to exit the script...
 pause 
 echo Performing Cleanup...
-rd c:\nano11 /s /q 
+rd c:\micro11 /s /q 
 rd c:\scratchdir /s /q 
 echo Creation Complete.
 pause
