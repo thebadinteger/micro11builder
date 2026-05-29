@@ -15,14 +15,14 @@ echo.
 if not exist "%DriveLetter%\sources\boot.wim" (
 	echo.Can't find Windows OS Installation files in the specified Drive Letter..
 	echo.
-	echo.Please enter the correct DVD Drive Letter..
+	echo.Please enter the correct Drive Letter..
 	goto :Stop
 )
 
 if not exist "%DriveLetter%\sources\install.wim" (
 	echo.Can't find Windows OS Installation files in the specified Drive Letter..
 	echo.
-	echo.Please enter the correct DVD Drive Letter..
+	echo.Please enter the correct Drive Letter..
 	goto :Stop
 )
 md C:\micro11
@@ -219,3 +219,8 @@ rd c:\micro11 /s /q
 rd c:\scratchdir /s /q 
 echo Creation Complete.
 pause
+exit
+
+:Stop
+pause
+exit
