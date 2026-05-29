@@ -65,6 +65,7 @@ call :RemoveApp "ZuneVideo"
 call :RemoveApp "MicrosoftFamily"
 call :RemoveApp "QuickAssist"
 call :RemoveApp "MicrosoftTeams"
+call :RemoveApp "Copilot"
 echo Removing Copilot (if folder exists)
 if exist "C:\scratchdir\windows\inboxapps\Microsoft.Copilot" (
     rd /s /q "C:\scratchdir\windows\inboxapps\Microsoft.Copilot" >nul 2>&1
