@@ -28,7 +28,7 @@ mkdir C:\micro11
 echo Copying Windows image. This will take around 1 minute depending on your PC's specs.
 xcopy /E /I /H /R /Y /J %DriveLetter% C:\micro11 >nul
 echo Copying complete!
-sleep 2
+timeout /t 2 /nobreak > nul
 cls
 echo Getting image information...
 dism /Get-WimInfo /wimfile:c:\micro11\sources\install.wim
@@ -97,10 +97,9 @@ dism /image:c:\scratchdir /Remove-ProvisionedAppxPackage /PackageName:Microsoft.
 echo Removing Copilot
 del C:\scratchdir\windows\inboxapps\Microsoft.Copilot /q
 echo Removing Edge
-cd "C:\scratchdir\program files (x86)\microsoft"
-del Edge /s /q
-del EdgeCore /s /q
-del EdgeUpdate /s /q
+rd /s /q "C:\scratchdir\program files (x86)\microsoft\Edge" >nul 2>&1
+rd /s /q "C:\scratchdir\program files (x86)\microsoft\EdgeCore" >nul 2>&1
+rd /s /q "C:\scratchdir\program files (x86)\microsoft\EdgeUpdate" >nul 2>&1
 echo Removing of system apps complete! Now proceeding to removal of system packages...
 timeout /t 1 /nobreak > nul
 cls
@@ -146,13 +145,12 @@ Reg add "HKLM\zNTUSER\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryM
 			Reg add "HKLM\zSOFTWARE\Microsoft\PolicyManager\current\device\Start" /v "ConfigureStartPins" /t REG_SZ /d "{\"pinnedList\": [{}]}" /f >nul 2>&1
 echo Enabling Local Accounts on OOBE:
 Reg add "HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\OOBE" /v "BypassNRO" /t REG_DWORD /d "1" /f >nul 2>&1
-reg add HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\OOBE /v HideOnlineAccountScreen /t REG_DWORD /d 1 /f /t REG_DWORD /d "1" /f >nul 2>&1
+Reg add "HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\OOBE" /v "HideOnlineAccountScreen" /t REG_DWORD /d "1" /f >nul 2>&1
 echo Disabling Reserved Storage:
 Reg add "HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\ReserveManager" /v "ShippedWithReserves" /t REG_DWORD /d "0" /f >nul 2>&1
 echo Disabling Chat icon:
 Reg add "HKLM\zSOFTWARE\Policies\Microsoft\Windows\Windows Chat" /v "ChatIcon" /t REG_DWORD /d "3" /f >nul 2>&1
 Reg add "HKLM\zNTUSER\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v "TaskbarMn" /t REG_DWORD /d "0" /f >nul 2>&1
-Reg add "
 echo Tweaking complete!
 echo Unmounting Registry...
 reg unload HKLM\zCOMPONENTS >nul 2>&1
