@@ -73,12 +73,24 @@ timeout /t 1 /nobreak > nul
 cls
 echo Removing Media Player Legacy:
 dism /image:c:\scratchdir /Disable-Feature /FeatureName:WindowsMediaPlayer /Remove >nul 2>&1
+
 echo Removing OneDrive:
-if exist "C:\scratchdir\Windows\System32\OneDriveSetup.exe" (
-    takeown /f C:\scratchdir\Windows\System32\OneDriveSetup.exe >nul 2>&1
-    icacls C:\scratchdir\Windows\System32\OneDriveSetup.exe /grant Administrators:F /T /C >nul 2>&1
-    del /f /q /s "C:\scratchdir\Windows\System32\OneDriveSetup.exe" >nul 2>&1
+for %%f in ("C:\scratchdir\Windows\System32\OneDriveSetup.exe" "C:\scratchdir\Windows\SysWOW64\OneDriveSetup.exe") do (
+    if exist "%%f" (
+        takeown /f "%%f" >nul 2>&1
+        icacls "%%f" /grant Administrators:F /T /C >nul 2>&1
+        del /f /q "%%f" >nul 2>&1
+    )
 )
+
+if exist "C:\scratchdir\Program Files\Microsoft OneDrive" rd /s /q "C:\scratchdir\Program Files\Microsoft OneDrive" >nul 2>&1
+if exist "C:\scratchdir\Program Files (x86)\Microsoft OneDrive" rd /s /q "C:\scratchdir\Program Files (x86)\Microsoft OneDrive" >nul 2>&1
+if exist "C:\scratchdir\Windows\System32\OneDrive" rd /s /q "C:\scratchdir\Windows\System32\OneDrive" >nul 2>&1
+
+for /d %%d in ("C:\scratchdir\Windows\SystemApps\Microsoft.OneDrive*") do rd /s /q "%%d" >nul 2>&1
+
+del /f /q /s "C:\scratchdir\Windows\System32\OneDrive*" >nul 2>&1
+
 echo Components removal complete!
 timeout /t 2 /nobreak > nul
 cls
@@ -117,6 +129,19 @@ Reg add "HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\ReserveManager" /v "Shi
 echo Disabling Chat icon:
 Reg add "HKLM\zSOFTWARE\Policies\Microsoft\Windows\Windows Chat" /v "ChatIcon" /t REG_DWORD /d "3" /f >nul 2>&1
 Reg add "HKLM\zNTUSER\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v "TaskbarMn" /t REG_DWORD /d "0" /f >nul 2>&1
+echo Disabling OneDrive via registry:
+Reg add "HKLM\zSOFTWARE\Policies\Microsoft\Windows\OneDrive" /v "DisableFileSyncNGSC" /t REG_DWORD /d "1" /f >nul 2>&1
+
+echo Disabling Telemetry:
+Reg add "HKLM\zSOFTWARE\Policies\Microsoft\Windows\DataCollection" /v "AllowTelemetry" /t REG_DWORD /d "0" /f >nul 2>&1
+Reg add "HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\Policies\DataCollection" /v "AllowTelemetry" /t REG_DWORD /d "0" /f >nul 2>&1
+Reg add "HKLM\zSOFTWARE\Policies\Microsoft\Windows\DataCollection" /v "MaxTelemetryAllowed" /t REG_DWORD /d "0" /f >nul 2>&1
+Reg add "HKLM\zNTUSER\Software\Microsoft\Windows\CurrentVersion\Privacy" /v "TailoredExperiencesWithDiagnosticDataEnabled" /t REG_DWORD /d "0" /f >nul 2>&1
+Reg add "HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\Diagnostics\DiagTrack" /v "UploadEnabled" /t REG_DWORD /d "0" /f >nul 2>&1
+Reg add "HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\Diagnostics\DiagTrack" /v "DiagTrackAuthorization" /t REG_DWORD /d "0" /f >nul 2>&1
+Reg add "HKLM\zSOFTWARE\Policies\Microsoft\Windows\CloudContent" /v "DisableWindowsConsumerFeatures" /t REG_DWORD /d "1" /f >nul 2>&1
+Reg add "HKLM\zSOFTWARE\Policies\Microsoft\Windows\CloudContent" /v "DisableConsumerAccountStateContent" /t REG_DWORD /d "1" /f >nul 2>&1
+
 echo Tweaking complete!
 echo Unmounting Registry...
 reg unload HKLM\zCOMPONENTS >nul 2>&1
