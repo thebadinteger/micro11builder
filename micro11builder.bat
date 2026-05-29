@@ -8,6 +8,7 @@ cls
 
 set DriveLetter=
 set /p DriveLetter=Please enter the drive letter for the Windows 11 ISO to modify: 
+set "DriveLetter=%DriveLetter::=%"
 set "DriveLetter=%DriveLetter%:"
 echo.
 if not exist "%DriveLetter%\sources\boot.wim" (
@@ -26,7 +27,7 @@ if not exist "%DriveLetter%\sources\install.wim" (
 
 mkdir C:\micro11
 echo Copying Windows image. This will take around 1 minute depending on your PC's specs.
-xcopy /E /I /H /R /Y /J %DriveLetter% C:\micro11 >nul
+xcopy /E /I /H /R /Y /J "%DriveLetter%\*" C:\micro11 >nul
 echo Copying complete!
 timeout /t 2 /nobreak > nul
 cls
@@ -40,66 +41,45 @@ echo.
 md c:\scratchdir
 dism /mount-image /imagefile:C:\micro11\sources\install.wim /index:%index% /mountdir:c:\scratchdir
 echo Mounting complete! Performing removal of applications...
-echo Removing Clipchamp...
-dism /image:c:\scratchdir /Remove-ProvisionedAppxPackage /PackageName:Clipchamp.Clipchamp*
-echo Removing Microsoft News...
-dism /image:c:\scratchdir /Remove-ProvisionedAppxPackage /PackageName:Microsoft.BingNews*
-echo Removing Microsoft Weather...
-dism /image:c:\scratchdir /Remove-ProvisionedAppxPackage /PackageName:Microsoft.BingWeather*
-echo Removing Xbox...
-dism /image:c:\scratchdir /Remove-ProvisionedAppxPackage /PackageName:Microsoft.GamingApp*
-echo Removing GetHelp...
-dism /image:c:\scratchdir /Remove-ProvisionedAppxPackage /PackageName:Microsoft.GetHelp*
-echo Removing GetStarted...
-dism /image:c:\scratchdir /Remove-ProvisionedAppxPackage /PackageName:Microsoft.Getstarted*
-echo Removing Office...
-dism /image:c:\scratchdir /Remove-ProvisionedAppxPackage /PackageName:Microsoft.MicrosoftOfficeHub*
-echo Removing Solitaire Collection...
-dism /image:c:\scratchdir /Remove-ProvisionedAppxPackage /PackageName:Microsoft.MicrosoftSolitaireCollection*
-echo Removing People App...
-dism /image:c:\scratchdir /Remove-ProvisionedAppxPackage /PackageName:Microsoft.People*
-echo Removing PowerAutomate...
-dism /image:c:\scratchdir /Remove-ProvisionedAppxPackage /PackageName:Microsoft.PowerAutomateDesktop*
-echo Removing Microsoft To Do...
-dism /image:c:\scratchdir /Remove-ProvisionedAppxPackage /PackageName:Microsoft.Todos*
-echo Removing Clock...
-dism /image:c:\scratchdir /Remove-ProvisionedAppxPackage /PackageName:Microsoft.WindowsAlarms*
-echo Removing Mail...
-dism /image:c:\scratchdir /Remove-ProvisionedAppxPackage /PackageName:microsoft.windowscommunicationsapps*
-echo Removing Feedback Hub...
-dism /image:c:\scratchdir /Remove-ProvisionedAppxPackage /PackageName:Microsoft.WindowsFeedbackHub*
-echo Removing Maps...
-dism /image:c:\scratchdir /Remove-ProvisionedAppxPackage /PackageName:Microsoft.WindowsMaps*
-echo Removing Sound Recorder...
-dism /image:c:\scratchdir /Remove-ProvisionedAppxPackage /PackageName:Microsoft.WindowsSoundRecorder*
-echo Removing Xbox TCUI...
-dism /image:c:\scratchdir /Remove-ProvisionedAppxPackage /PackageName:Microsoft.Xbox.TCUI*
-echo Removing Xbox Gaming Overlay...
-dism /image:c:\scratchdir /Remove-ProvisionedAppxPackage /PackageName:Microsoft.XboxGamingOverlay*
-echo Removing Xbox Game Overlay...
-dism /image:c:\scratchdir /Remove-ProvisionedAppxPackage /PackageName:Microsoft.XboxGameOverlay*
-echo Removing XboxSpeechToTextOverlay...
-dism /image:c:\scratchdir /Remove-ProvisionedAppxPackage /PackageName:Microsoft.XboxSpeechToTextOverlay*
-echo Removing Your Phone...
-dism /image:c:\scratchdir /Remove-ProvisionedAppxPackage /PackageName:Microsoft.YourPhone*
-echo Removing Music...
-dism /image:c:\scratchdir /Remove-ProvisionedAppxPackage /PackageName:Microsoft.ZuneMusic*
-echo Removing Video...
-dism /image:c:\scratchdir /Remove-ProvisionedAppxPackage /PackageName:Microsoft.ZuneVideo*
-echo Removing Family...
-dism /image:c:\scratchdir /Remove-ProvisionedAppxPackage /PackageName:MicrosoftCorporationII.MicrosoftFamily*
-echo Removing QuickAssist...
-dism /image:c:\scratchdir /Remove-ProvisionedAppxPackage /PackageName:MicrosoftCorporationII.QuickAssist*
-echo Removing Teams...
-dism /image:c:\scratchdir /Remove-ProvisionedAppxPackage /PackageName:MicrosoftTeams*
-echo Removing Cortana...
-dism /image:c:\scratchdir /Remove-ProvisionedAppxPackage /PackageName:Microsoft.549981C3F5F10*
-echo Removing Copilot
-rd /s /q "C:\scratchdir\windows\inboxapps\Microsoft.Copilot" >nul 2>&1
-echo Removing Edge
-rd /s /q "C:\scratchdir\program files (x86)\microsoft\Edge" >nul 2>&1
-rd /s /q "C:\scratchdir\program files (x86)\microsoft\EdgeCore" >nul 2>&1
-rd /s /q "C:\scratchdir\program files (x86)\microsoft\EdgeUpdate" >nul 2>&1
+echo Removing Bloatware...
+call :RemoveApp "Clipchamp"
+call :RemoveApp "BingNews"
+call :RemoveApp "BingWeather"
+call :RemoveApp "GamingApp"
+call :RemoveApp "GetHelp"
+call :RemoveApp "Getstarted"
+call :RemoveApp "MicrosoftOfficeHub"
+call :RemoveApp "MicrosoftSolitaireCollection"
+call :RemoveApp "People"
+call :RemoveApp "PowerAutomateDesktop"
+call :RemoveApp "Todos"
+call :RemoveApp "WindowsAlarms"
+call :RemoveApp "windowscommunicationsapps"
+call :RemoveApp "WindowsFeedbackHub"
+call :RemoveApp "WindowsMaps"
+call :RemoveApp "WindowsSoundRecorder"
+call :RemoveApp "Xbox"
+call :RemoveApp "YourPhone"
+call :RemoveApp "ZuneMusic"
+call :RemoveApp "ZuneVideo"
+call :RemoveApp "MicrosoftFamily"
+call :RemoveApp "QuickAssist"
+call :RemoveApp "MicrosoftTeams"
+echo Removing Copilot (if folder exists)
+if exist "C:\scratchdir\windows\inboxapps\Microsoft.Copilot" (
+    rd /s /q "C:\scratchdir\windows\inboxapps\Microsoft.Copilot" >nul 2>&1
+)
+
+echo Removing Edge (if folders exist)
+if exist "C:\scratchdir\program files (x86)\microsoft\Edge" (
+    rd /s /q "C:\scratchdir\program files (x86)\microsoft\Edge" >nul 2>&1
+)
+if exist "C:\scratchdir\program files (x86)\microsoft\EdgeCore" (
+    rd /s /q "C:\scratchdir\program files (x86)\microsoft\EdgeCore" >nul 2>&1
+)
+if exist "C:\scratchdir\program files (x86)\microsoft\EdgeUpdate" (
+    rd /s /q "C:\scratchdir\program files (x86)\microsoft\EdgeUpdate" >nul 2>&1
+)
 echo Removing of system apps complete! Now proceeding to removal of system packages...
 timeout /t 1 /nobreak > nul
 cls
@@ -107,9 +87,11 @@ echo Removing Media Player Legacy:
 dism /image:c:\scratchdir /Disable-Feature /FeatureName:WindowsMediaPlayer /Remove >nul 2>&1
 
 echo Removing OneDrive:
-takeown /f C:\scratchdir\Windows\System32\OneDriveSetup.exe
-icacls C:\scratchdir\Windows\System32\OneDriveSetup.exe /grant Administrators:F /T /C
-del /f /q /s "C:\scratchdir\Windows\System32\OneDriveSetup.exe"
+if exist "C:\scratchdir\Windows\System32\OneDriveSetup.exe" (
+    takeown /f C:\scratchdir\Windows\System32\OneDriveSetup.exe >nul 2>&1
+    icacls C:\scratchdir\Windows\System32\OneDriveSetup.exe /grant Administrators:F /T /C >nul 2>&1
+    del /f /q /s "C:\scratchdir\Windows\System32\OneDriveSetup.exe" >nul 2>&1
+)
 echo Components removal complete!
 timeout /t 2 /nobreak > nul
 cls
@@ -158,11 +140,21 @@ reg unload HKLM\zSCHEMA >nul 2>&1
 reg unload HKLM\zSOFTWARE >nul 2>&1
 reg unload HKLM\zSYSTEM >nul 2>&1
 echo Replacing Wallpapers
-del C:\ScratchDir\Windows\Web\Wallpaper\Windows\img19.jpg
-copy /y %~dp0wallpaperdark.jpg c:\scratchdir\Windows\Web\Wallpaper\Windows\img19.jpg
-copy /y %~dp0wallpaperlight.jpg c:\scratchdir\Windows\Web\Wallpaper\Windows\img0.jpg
-del C:\scratchdir\Windows\Web\Screen\img100.jpg
-copy /y %~dp0wallpaperdark.jpg C:\Scratchdir\Windows\Web\Screen\img100.jpg
+if exist "C:\scratchdir\Windows\Web\Wallpaper\Windows\img19.jpg" (
+    del /f /q "C:\scratchdir\Windows\Web\Wallpaper\Windows\img19.jpg" >nul 2>&1
+)
+if exist "%~dp0wallpaperdark.jpg" (
+    copy /y "%~dp0wallpaperdark.jpg" "C:\scratchdir\Windows\Web\Wallpaper\Windows\img19.jpg" >nul
+)
+if exist "%~dp0wallpaperlight.jpg" (
+    copy /y "%~dp0wallpaperlight.jpg" "C:\scratchdir\Windows\Web\Wallpaper\Windows\img0.jpg" >nul
+)
+if exist "C:\scratchdir\Windows\Web\Screen\img100.jpg" (
+    del /f /q "C:\scratchdir\Windows\Web\Screen\img100.jpg" >nul 2>&1
+)
+if exist "%~dp0wallpaperdark.jpg" (
+    copy /y "%~dp0wallpaperdark.jpg" "C:\scratchdir\Windows\Web\Screen\img100.jpg" >nul
+)
 echo Cleaning up image...
 dism /image:c:\scratchdir /Cleanup-Image /StartComponentCleanup /ResetBase
 echo Cleanup complete.
@@ -179,22 +171,20 @@ cls
 echo Mounting boot image:
 dism /mount-image /imagefile:c:\micro11\sources\boot.wim /index:2 /mountdir:c:\scratchdir
 echo Loading registry...
-reg load HKLM\zCOMPONENTS "c:\scratchdir\Windows\System32\config\COMPONENTS" >nul
-reg load HKLM\zDEFAULT "c:\scratchdir\Windows\System32\config\default" >nul
-reg load HKLM\zNTUSER "c:\scratchdir\Users\Default\ntuser.dat" >nul
-reg load HKLM\zSOFTWARE "c:\scratchdir\Windows\System32\config\SOFTWARE" >nul
-reg load HKLM\zSYSTEM "c:\scratchdir\Windows\System32\config\SYSTEM" >nul
+reg load HKLM\zCOMPONENTS "C:\scratchdir\Windows\System32\config\COMPONENTS" >nul
+reg load HKLM\zDEFAULT "C:\scratchdir\Windows\System32\config\default" >nul
+reg load HKLM\zSOFTWARE "C:\scratchdir\Windows\System32\config\SOFTWARE" >nul
+reg load HKLM\zSYSTEM "C:\scratchdir\Windows\System32\config\SYSTEM" >nul
+
 echo Bypassing system requirements(on the setup image):
-			Reg add "HKLM\zDEFAULT\Control Panel\UnsupportedHardwareNotificationCache" /v "SV1" /t REG_DWORD /d "0" /f >nul 2>&1
-			Reg add "HKLM\zDEFAULT\Control Panel\UnsupportedHardwareNotificationCache" /v "SV2" /t REG_DWORD /d "0" /f >nul 2>&1
-			Reg add "HKLM\zNTUSER\Control Panel\UnsupportedHardwareNotificationCache" /v "SV1" /t REG_DWORD /d "0" /f >nul 2>&1
-			Reg add "HKLM\zNTUSER\Control Panel\UnsupportedHardwareNotificationCache" /v "SV2" /t REG_DWORD /d "0" /f >nul 2>&1
-			Reg add "HKLM\zSYSTEM\Setup\LabConfig" /v "BypassCPUCheck" /t REG_DWORD /d "1" /f >nul 2>&1
-			Reg add "HKLM\zSYSTEM\Setup\LabConfig" /v "BypassRAMCheck" /t REG_DWORD /d "1" /f >nul 2>&1
-			Reg add "HKLM\zSYSTEM\Setup\LabConfig" /v "BypassSecureBootCheck" /t REG_DWORD /d "1" /f >nul 2>&1
-			Reg add "HKLM\zSYSTEM\Setup\LabConfig" /v "BypassStorageCheck" /t REG_DWORD /d "1" /f >nul 2>&1
-			Reg add "HKLM\zSYSTEM\Setup\LabConfig" /v "BypassTPMCheck" /t REG_DWORD /d "1" /f >nul 2>&1
-			Reg add "HKLM\zSYSTEM\Setup\MoSetup" /v "AllowUpgradesWithUnsupportedTPMOrCPU" /t REG_DWORD /d "1" /f >nul 2>&1
+Reg add "HKLM\zDEFAULT\Control Panel\UnsupportedHardwareNotificationCache" /v "SV1" /t REG_DWORD /d "0" /f >nul 2>&1
+Reg add "HKLM\zDEFAULT\Control Panel\UnsupportedHardwareNotificationCache" /v "SV2" /t REG_DWORD /d "0" /f >nul 2>&1
+Reg add "HKLM\zSYSTEM\Setup\LabConfig" /v "BypassCPUCheck" /t REG_DWORD /d "1" /f >nul 2>&1
+Reg add "HKLM\zSYSTEM\Setup\LabConfig" /v "BypassRAMCheck" /t REG_DWORD /d "1" /f >nul 2>&1
+Reg add "HKLM\zSYSTEM\Setup\LabConfig" /v "BypassSecureBootCheck" /t REG_DWORD /d "1" /f >nul 2>&1
+Reg add "HKLM\zSYSTEM\Setup\LabConfig" /v "BypassStorageCheck" /t REG_DWORD /d "1" /f >nul 2>&1
+Reg add "HKLM\zSYSTEM\Setup\LabConfig" /v "BypassTPMCheck" /t REG_DWORD /d "1" /f >nul 2>&1
+Reg add "HKLM\zSYSTEM\Setup\MoSetup" /v "AllowUpgradesWithUnsupportedTPMOrCPU" /t REG_DWORD /d "1" /f >nul 2>&1
 echo Tweaking complete! 
 echo Unmounting Registry...
 reg unload HKLM\zCOMPONENTS >nul 2>&1
@@ -209,10 +199,16 @@ dism /unmount-image /mountdir:c:\scratchdir /commit
 cls
 echo the micro11 image is now completed. Proceeding with the making of the ISO...
 echo Copying unattended file for bypassing MS account on OOBE...
-copy /y %~dp0autounattend.xml c:\micro11\autounattend.xml
+if exist "%~dp0autounattend.xml" (
+    copy /y "%~dp0autounattend.xml" C:\micro11\autounattend.xml >nul
+)
 echo.
 echo Creating ISO image...
-%~dp0oscdimg.exe -m -o -u2 -udfver102 -bootdata:2#p0,e,bc:\micro11\boot\etfsboot.com#pEF,e,bc:\micro11\efi\microsoft\boot\efisys.bin c:\micro11 %~dp0micro11.iso
+if exist "%~dp0oscdimg.exe" (
+    "%~dp0oscdimg.exe" -m -o -u2 -udfver102 -bootdata:2#p0,e,bC:\micro11\boot\etfsboot.com#pEF,e,bC:\micro11\efi\microsoft\boot\efisys.bin C:\micro11 "%~dp0micro11.iso"
+) else (
+    echo oscdimg.exe not found in script directory! Skipping ISO creation.
+)
 echo Creation completed! Press any key to exit the script...
 pause 
 echo Performing Cleanup...
@@ -221,6 +217,15 @@ rd c:\scratchdir /s /q
 echo Creation Complete.
 pause
 exit
+
+:RemoveApp
+for /f "tokens=2 delims=:" %%a in ('dism /image:C:\scratchdir /Get-ProvisionedAppxPackages ^| findstr /i "PackageName" ^| findstr /i "%~1"') do (
+    set "pkg=%%a"
+    set "pkg=!pkg: =!"
+    echo Removing !pkg!...
+    dism /image:C:\scratchdir /Remove-ProvisionedAppxPackage /PackageName:!pkg! >nul
+)
+exit /b
 
 :Stop
 pause
