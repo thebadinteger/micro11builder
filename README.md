@@ -53,6 +53,6 @@ What is removed:
 
 Known issues:
 
-1. Only the x64 .iso supported as of now. This can be easily fixable by the end user, just by replacing every instance of en-us with the language needed (like ro-RO and so on), and every x64 instance with arm64.
+1. Only the x64 .iso supported as of now. This can be easily fixable by the end user, just by replacing every instance of x64 with arm64.
 2. You cannot change the system language.
 
